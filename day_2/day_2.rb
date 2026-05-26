@@ -14,7 +14,7 @@ module Day2
                            find_small_side_of(dimension))
     end
 
-    p "Part I: #{result.sum}"
+    p "Day 2 :: Part I :: #{result.sum}"
 
     file.close
   end
@@ -30,7 +30,7 @@ module Day2
       cubic_volume + smallest_perimeter
     end
 
-    p "Part II: #{result.sum}"
+    p "Day 2 :: Part II :: #{result.sum}"
 
     file.close
   end
