@@ -66,7 +66,7 @@ module Day2
   end
 
   def parse_lines_from(file)
-    file.each_line(chomp: true).map{ |l| parse(l) }
+    file.each_line(chomp: true).lazy.map{ |l| parse(l) }
   end
 
   def parse(line)
