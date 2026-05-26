@@ -1,8 +1,12 @@
+require_relative '../explorer/explorer'
+
 module Day2
   extend self
 
+  extend Explorer
+
   def part_one
-    file = read_file
+    file = read_file('puzzle.txt')
     parsed_lines = parse_lines_from(file)
 
     result = parsed_lines.map do |dimension|
@@ -16,7 +20,7 @@ module Day2
   end
 
   def part_two
-    file = read_file
+    file = read_file('puzzle.txt')
     parsed_lines = parse_lines_from(file)
 
     result = parsed_lines.map do |dimension|
@@ -70,19 +74,11 @@ module Day2
     lines.map{ |line| parse(line) }
   end
 
-  def read_lines_from(file)
-    file.each_line(chomp: true)
-  end
-
   def parse(line)
     # each line is lxwxh (10x1x1)
     values = line.split("x")
 
     Dimension.new(values[ 0 ].to_i, values[ 1 ].to_i, values[ 2 ].to_i)
-  end
-
-  def read_file
-    File.new('puzzle.txt')
   end
 end
 
