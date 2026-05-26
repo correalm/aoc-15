@@ -1,84 +1,79 @@
-require_relative '../explorer/explorer'
-
 module Day2
   extend self
 
-  extend Explorer
+  Box = Struct.new(:length, :width, :height)
+
+  private_constant :Box
 
   def part_one
-    file = read_file('puzzle.txt')
-    parsed_lines = parse_lines_from(file)
+    File.open(File.expand_path("puzzle.txt", __dir__)) do |file|
+      parsed_lines = parse_lines_from(file)
 
-    result = parsed_lines.map do |dimension|
-      calculate_total_area(calculate_surface_area_of(dimension),
-                           find_small_side_of(dimension))
+      result = parsed_lines.map do |box|
+        calculate_total_area(calculate_surface_area_of(box),
+                             find_small_side_of(box))
+      end
+
+      p "Day 2 :: Part I :: #{result.sum}"
     end
-
-    p "Day 2 :: Part I :: #{result.sum}"
-
-    file.close
   end
 
   def part_two
-    file = read_file('puzzle.txt')
-    parsed_lines = parse_lines_from(file)
+    File.open(File.expand_path("puzzle.txt", __dir__)) do |file|
+      parsed_lines = parse_lines_from(file)
 
-    result = parsed_lines.map do |dimension|
-      cubic_volume = calculate_cubic_volume_of(dimension)
-      smallest_perimeter = find_smallest_perimeter_of(dimension)
+      result = parsed_lines.map do |box|
+        cubic_volume = calculate_cubic_volume_of(box)
+        smallest_perimeter = find_smallest_perimeter_of(box)
 
-      cubic_volume + smallest_perimeter
+        cubic_volume + smallest_perimeter
+      end
+
+      p "Day 2 :: Part II :: #{result.sum}"
     end
-
-    p "Day 2 :: Part II :: #{result.sum}"
-
-    file.close
   end
 
   private
-
-  Dimension = Struct.new("Dimension", :length, :width, :height)
 
   def calculate_total_area(surface_area, extra)
     surface_area + extra
   end
 
-  def calculate_cubic_volume_of(dimension)
-    dimension.length * dimension.width * dimension.height
+  def calculate_cubic_volume_of(box)
+    box.length * box.width * box.height
   end
 
-  def calculate_surface_area_of(dimension)
-    (2 * dimension.length * dimension.width) +
-    (2 * dimension.width * dimension.height) +
-    (2 * dimension.height * dimension.length)
+  def calculate_surface_area_of(box)
+    (2 * box.length * box.width) +
+    (2 * box.width * box.height) +
+    (2 * box.height * box.length)
   end
 
-  def find_small_side_of(dimension)
-    l = dimension.length
-    w = dimension.width
-    h = dimension.height
+  def find_small_side_of(box)
+    l = box.length
+    w = box.width
+    h = box.height
 
     [(l*w), (w*h), (h*l)].min
   end
 
-  def find_smallest_perimeter_of(dimension)
-    l = dimension.length
-    w = dimension.width
-    h = dimension.height
+  def find_smallest_perimeter_of(box)
+    l = box.length
+    w = box.width
+    h = box.height
 
     [(2*l + 2*w), (2*w + 2*h), (2*h + 2*l)].min
   end
 
   def parse_lines_from(file)
-    lines = read_lines_from(file)
-    lines.map{ |line| parse(line) }
+    file.each_line(chomp: true).map{ |l| parse(l) }
   end
 
   def parse(line)
     # each line is lxwxh (10x1x1)
     values = line.split("x")
 
-    Dimension.new(values[ 0 ].to_i, values[ 1 ].to_i, values[ 2 ].to_i)
+    Box.new(values[ 0 ].to_i, values[ 1 ].to_i, values[ 2 ].to_i)
   end
 end
 
