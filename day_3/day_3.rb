@@ -10,21 +10,17 @@ module Day3
       start = Coordinate.new(0, 0)
       coordinates = Set.new([start])
 
-      last_know_position = start
-
-      count_of_visited_houses = 1
+      last_know_coordinate = start
 
       line.strip.each_char do |c|
-        coordinate = get_new_coordinate(last_know_position, parse_coordinate(c))
-
-        count_of_visited_houses += 1 unless coordinates.include? coordinate
+        coordinate = get_new_coordinate(last_know_coordinate, parse_coordinate(c))
 
         coordinates.add coordinate
 
-        last_know_position = coordinate
+        last_know_coordinate = coordinate
       end
 
-      p count_of_visited_houses
+      p coordinates.size
     end
   end
 
@@ -33,12 +29,9 @@ module Day3
 
   private
 
-  def get_new_coordinate(last_know_position, new_coordinate)
-    coordinate = Coordinate.new(last_know_position[:x], last_know_position[:y])
-    coordinate.x += new_coordinate[:x]
-    coordinate.y += new_coordinate[:y]
-
-    coordinate
+  def get_new_coordinate(last_know_coordinate, new_coordinate)
+    Coordinate.new(last_know_coordinate.x + new_coordinate[:x],
+                   last_know_coordinate.y + new_coordinate[:y])
   end
 
   def parse_coordinate(c)
