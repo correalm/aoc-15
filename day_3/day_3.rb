@@ -13,7 +13,7 @@ module Day3
       last_know_coordinate = start
 
       line.strip.each_char do |c|
-        coordinate = get_new_coordinate(last_know_coordinate, parse_coordinate(c))
+        coordinate = get_new_coordinate_from(last_know_coordinate, parse_next_move(c))
 
         coordinates.add coordinate
 
@@ -29,17 +29,17 @@ module Day3
 
   private
 
-  def get_new_coordinate(last_know_coordinate, new_coordinate)
-    Coordinate.new(last_know_coordinate.x + new_coordinate[:x],
-                   last_know_coordinate.y + new_coordinate[:y])
+  def get_new_coordinate_from(last_know_coordinate, next_move)
+    Coordinate.new(last_know_coordinate.x + next_move.x,
+                   last_know_coordinate.y + next_move.y)
   end
 
-  def parse_coordinate(c)
+  def parse_next_move(c)
     case c
-    when "^" then { x:  1, y: 0 }
-    when "v" then { x: -1, y: 0 }
-    when ">" then { y:  1, x: 0 }
-    when "<" then { y: -1, x: 0 }
+    when "^" then Coordinate.new(1, 0)
+    when "v" then Coordinate.new(-1, 0)
+    when ">" then Coordinate.new(0, 1)
+    when "<" then Coordinate.new(0, -1)
     else raise "Unknown direction #{c}"
     end
   end
