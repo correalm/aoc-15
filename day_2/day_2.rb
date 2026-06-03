@@ -1,5 +1,9 @@
+require_relative "../logger/logger"
+
 module Day2
   extend self
+
+  extend Logger
 
   Box = Struct.new(:length, :width, :height)
 
@@ -14,7 +18,7 @@ module Day2
                              find_small_side_of(box))
       end
 
-      p "Day 2 :: Part I :: #{result.sum}"
+      log(day: 2, part: 1, result: result.sum)
     end
   end
 
@@ -29,7 +33,7 @@ module Day2
         cubic_volume + smallest_perimeter
       end
 
-      p "Day 2 :: Part II :: #{result.sum}"
+      log(day: 2, part: 2, result: result.sum)
     end
   end
 
