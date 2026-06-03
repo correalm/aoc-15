@@ -14,14 +14,14 @@ module Day3
       start = Coordinate.new(0, 0)
       coordinates = Set.new([start])
 
-      last_know_coordinate = start
+      last_known_coordinate = start
 
       line.strip.each_char do |c|
-        coordinate = get_new_coordinate_from(last_know_coordinate, parse_next_move(c))
+        coordinate = get_new_coordinate_from(last_known_coordinate, parse_next_move(c))
 
         coordinates.add coordinate
 
-        last_know_coordinate = coordinate
+        last_known_coordinate = coordinate
       end
 
       log(day: 3, part: 1, result: coordinates.size)
@@ -37,21 +37,21 @@ module Day3
 
       coordinates = Set.new([start])
 
-      last_know_coordinate = start
-      last_know_robo_coordinate = robo_santa_start
+      last_known_coordinate = start
+      last_known_robo_coordinate = robo_santa_start
 
       line.strip.each_char.with_index do |c, index|
         is_santa_step = index % 2 == 0
 
-        coordinate = get_new_coordinate_from(is_santa_step ? last_know_coordinate : last_know_robo_coordinate,
+        coordinate = get_new_coordinate_from(is_santa_step ? last_known_coordinate : last_known_robo_coordinate,
                                              parse_next_move(c))
 
         coordinates.add coordinate
 
         if is_santa_step
-          last_know_coordinate = coordinate
+          last_known_coordinate = coordinate
         else
-          last_know_robo_coordinate = coordinate
+          last_known_robo_coordinate = coordinate
         end
       end
 
@@ -61,9 +61,9 @@ module Day3
 
   private
 
-  def get_new_coordinate_from(last_know_coordinate, next_move)
-    Coordinate.new(last_know_coordinate.x + next_move.x,
-                   last_know_coordinate.y + next_move.y)
+  def get_new_coordinate_from(last_known_coordinate, next_move)
+    Coordinate.new(last_known_coordinate.x + next_move.x,
+                   last_known_coordinate.y + next_move.y)
   end
 
   def parse_next_move(c)
