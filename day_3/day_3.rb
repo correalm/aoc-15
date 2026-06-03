@@ -35,8 +35,7 @@ module Day3
       start = Coordinate.new(0, 0)
       robo_santa_start = Coordinate.new(0, 0)
 
-      santa_coordinates = Set.new([start])
-      robo_santa_coordinates = Set.new([robo_santa_start])
+      coordinates = Set.new([start])
 
       last_know_coordinate = start
       last_know_robo_coordinate = robo_santa_start
@@ -45,19 +44,19 @@ module Day3
         if index % 2 == 0
           coordinate = get_new_coordinate_from(last_know_coordinate, parse_next_move(c))
 
-          santa_coordinates.add coordinate
+          coordinates.add coordinate
 
           last_know_coordinate = coordinate
         else
           coordinate = get_new_coordinate_from(last_know_robo_coordinate, parse_next_move(c))
 
-          robo_santa_coordinates.add coordinate
+          coordinates.add coordinate
 
           last_know_robo_coordinate = coordinate
         end
       end
 
-      log(day: 3, part: 2, result: santa_coordinates.union(robo_santa_coordinates).size)
+      log(day: 3, part: 2, result: coordinates.size)
     end
   end
 
