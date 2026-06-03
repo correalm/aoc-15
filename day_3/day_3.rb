@@ -6,25 +6,54 @@ module Day3
   extend Logger
 
   Coordinate = Struct.new(:x, :y)
+
+  class Deliverer
+    attr_reader :visited_houses_coordinates
+
+    def initialize
+      @last_delivery_coordinate = Coordinate.new(0, 0)
+      @visited_houses_coordinates = Set.new([@last_delivery_coordinate])
+    end
+
+    def self.parse_delivery_instruction(instruction)
+      case instruction
+      when "^" then Coordinate.new(1, 0)
+      when "v" then Coordinate.new(-1, 0)
+      when ">" then Coordinate.new(0, 1)
+      when "<" then Coordinate.new(0, -1)
+      else raise "Unknown direction #{instruction}"
+      end
+    end
+
+    def delivery_on(instruction)
+      next_coordinate = get_next_coordinate_from(instruction)
+
+      @visited_houses_coordinates.add next_coordinate
+
+      @last_delivery_coordinate = next_coordinate
+    end
+
+    def visited_houses_count
+      @visited_houses_coordinates.size
+    end
+
+    private
+
+    def get_next_coordinate_from(instruction)
+      Coordinate.new(@last_delivery_coordinate.x + instruction.x,
+                     @last_delivery_coordinate.y + instruction.y)
+    end
+  end
   
   def part_one
     File.open(File.expand_path("puzzle.txt", __dir__)) do |file|
       line = file.readline
 
-      start = Coordinate.new(0, 0)
-      coordinates = Set.new([start])
 
-      last_known_coordinate = start
+      santa = Deliverer.new
+      line.strip.each_char{ |c| santa.delivery_on(Deliverer.parse_delivery_instruction(c)) }
 
-      line.strip.each_char do |c|
-        coordinate = get_new_coordinate_from(last_known_coordinate, parse_next_move(c))
-
-        coordinates.add coordinate
-
-        last_known_coordinate = coordinate
-      end
-
-      log(day: 3, part: 1, result: coordinates.size)
+      log(day: 3, part: 1, result: santa.visited_houses_count)
     end
   end
 
@@ -32,47 +61,21 @@ module Day3
     File.open(File.expand_path("puzzle.txt", __dir__)) do |file|
       line = file.readline
 
-      start = Coordinate.new(0, 0)
-      robo_santa_start = Coordinate.new(0, 0)
-
-      coordinates = Set.new([start])
-
-      last_known_coordinate = start
-      last_known_robo_coordinate = robo_santa_start
+      santa = Deliverer.new
+      robo_santa = Deliverer.new
 
       line.strip.each_char.with_index do |c, index|
         is_santa_step = index % 2 == 0
 
-        coordinate = get_new_coordinate_from(is_santa_step ? last_known_coordinate : last_known_robo_coordinate,
-                                             parse_next_move(c))
-
-        coordinates.add coordinate
-
         if is_santa_step
-          last_known_coordinate = coordinate
+          santa.delivery_on(Deliverer.parse_delivery_instruction(c))
         else
-          last_known_robo_coordinate = coordinate
+          robo_santa.delivery_on(Deliverer.parse_delivery_instruction(c))
         end
       end
 
-      log(day: 3, part: 2, result: coordinates.size)
-    end
-  end
-
-  private
-
-  def get_new_coordinate_from(last_known_coordinate, next_move)
-    Coordinate.new(last_known_coordinate.x + next_move.x,
-                   last_known_coordinate.y + next_move.y)
-  end
-
-  def parse_next_move(c)
-    case c
-    when "^" then Coordinate.new(1, 0)
-    when "v" then Coordinate.new(-1, 0)
-    when ">" then Coordinate.new(0, 1)
-    when "<" then Coordinate.new(0, -1)
-    else raise "Unknown direction #{c}"
+      result = santa.visited_houses_coordinates.union(robo_santa.visited_houses_coordinates).size
+      log(day: 3, part: 2, result: result)
     end
   end
 end
