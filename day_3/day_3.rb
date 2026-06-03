@@ -41,17 +41,16 @@ module Day3
       last_know_robo_coordinate = robo_santa_start
 
       line.strip.each_char.with_index do |c, index|
-        if index % 2 == 0
-          coordinate = get_new_coordinate_from(last_know_coordinate, parse_next_move(c))
+        is_santa_step = index % 2 == 0
 
-          coordinates.add coordinate
+        coordinate = get_new_coordinate_from(is_santa_step ? last_know_coordinate : last_know_robo_coordinate,
+                                             parse_next_move(c))
 
+        coordinates.add coordinate
+
+        if is_santa_step
           last_know_coordinate = coordinate
         else
-          coordinate = get_new_coordinate_from(last_know_robo_coordinate, parse_next_move(c))
-
-          coordinates.add coordinate
-
           last_know_robo_coordinate = coordinate
         end
       end
