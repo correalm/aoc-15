@@ -1,5 +1,9 @@
+require_relative "../logger/logger"
+
 module Day3
   extend self
+
+  extend Logger
 
   Coordinate = Struct.new(:x, :y)
   
@@ -20,11 +24,41 @@ module Day3
         last_know_coordinate = coordinate
       end
 
-      p coordinates.size
+      log(day: 3, part: 1, result: coordinates.size)
     end
   end
 
   def part_two
+    File.open(File.expand_path("puzzle.txt", __dir__)) do |file|
+      line = file.readline
+
+      start = Coordinate.new(0, 0)
+      robo_santa_start = Coordinate.new(0, 0)
+
+      santa_coordinates = Set.new([start])
+      robo_santa_coordinates = Set.new([robo_santa_start])
+
+      last_know_coordinate = start
+      last_know_robo_coordinate = robo_santa_start
+
+      line.strip.each_char.with_index do |c, index|
+        if index % 2 == 0
+          coordinate = get_new_coordinate_from(last_know_coordinate, parse_next_move(c))
+
+          santa_coordinates.add coordinate
+
+          last_know_coordinate = coordinate
+        else
+          coordinate = get_new_coordinate_from(last_know_robo_coordinate, parse_next_move(c))
+
+          robo_santa_coordinates.add coordinate
+
+          last_know_robo_coordinate = coordinate
+        end
+      end
+
+      log(day: 3, part: 2, result: santa_coordinates.union(robo_santa_coordinates).size)
+    end
   end
 
   private
