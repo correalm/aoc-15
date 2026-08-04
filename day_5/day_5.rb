@@ -15,19 +15,22 @@ module Day5
   private_constant :VOWELS, :UNPERMITTED_SUBSTRINGS
 
   def part_one
+    count = 0
+
     File.open(File.expand_path("puzzle.txt", __dir__)) do |file|
       file.each_line(chomp: true).lazy.each do |line|
-        p line.count('a', 'e')
-        next unless line.count('a', 'e', 'i', 'o', 'u') >= 3
+        next unless line.count('aeiou') >= 3
 
         # ([a-z]) -> capture group 1, matches any single char and "remebers" it to be checked again on \1
-        # next unless line.match?(/([a-z])\1/)
+        next unless line.match?(/([a-z])\1/)
 
-        # p line
+        next if line.match?(/ab|cd|pq|xy/)
 
-
+        count += 1
       end
     end
+
+    p count
   end
 end
 
