@@ -25,7 +25,7 @@ module Day5
       end
     end
 
-    p count
+    log(day: 5, part: 1, result: count)
   end
 end
 
