@@ -2,8 +2,6 @@
 
 require_relative "../logger/logger"
 
-require 'set'
-
 module Day5
   extend self
 
