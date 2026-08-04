@@ -49,7 +49,6 @@ module Day3
     File.open(File.expand_path("puzzle.txt", __dir__)) do |file|
       line = file.readline
 
-
       santa = Deliverer.new
       line.strip.each_char{ |c| santa.delivery_on(Deliverer.parse_delivery_instruction(c)) }
 
