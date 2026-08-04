@@ -18,7 +18,7 @@ module Day5
     count = 0
 
     File.open(File.expand_path("puzzle.txt", __dir__)) do |file|
-      file.each_line(chomp: true).lazy.each do |line|
+      file.each_line(chomp: true).each do |line|
         next unless line.count('aeiou') >= 3
 
         # ([a-z]) -> capture group 1, matches any single char and "remebers" it to be checked again on \1
