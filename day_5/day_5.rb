@@ -9,11 +9,6 @@ module Day5
 
   extend Logger
 
-  VOWELS = Set.new(['a', 'e', 'i', 'o', 'u'])
-  UNPERMITTED_SUBSTRINGS = Set.new(['ab', 'cd', 'pq', 'xy'])
-
-  private_constant :VOWELS, :UNPERMITTED_SUBSTRINGS
-
   def part_one
     count = 0
 
