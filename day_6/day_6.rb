@@ -33,7 +33,6 @@ module Day6
         line.delete_prefix!('turn off')
       end
 
-      # now I have to get the initial coordinates and the final ones and update their state
       initial, _,final = line.strip.chomp.split(' ')
 
       x, y = initial.split(',')
@@ -44,12 +43,10 @@ module Day6
           current_state = board[ix][iy]
 
           if current_action == Actions[:toggle]
-            #p "I should toggle x: #{ix} y: #{iy}"
             board[ix][iy] = !current_state
+          else
+            board[ix][iy] = current_action == Actions[:on]
           end
-
-          # p "I should turn #{current_action == Actions[:on]} x: #{ix} y: #{iy}"
-          board[ix][iy] = current_action == Actions[:on]
         end
       end
     end
@@ -69,13 +66,16 @@ module Day6
   def init_board
     board = []
 
-    # x axis
+    #            board
+    #     y1    y2      y3
+    # x1 [[false, false, false ...]
+    # x2 [[false, false, false ...]]
+    #              ...
     for x in 0..999
       board[x] = []
 
-      # for each x line, fill the y with on lights
       for y in 0..999
-        board[x] << State[:on]
+        board[x] << State[:off]
       end
     end
 
