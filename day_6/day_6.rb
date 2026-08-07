@@ -11,25 +11,21 @@ module Day6
   extend Logger
   extend Reader
 
-  Point = Struct.new(:x, :y, :state)
-
-  Actions = { on: 'turn on', off: 'turn off', toggle: 'toggle' }
   State = { on: true, off: false }
 
   def part_one
     board = init_board
 
     lines.lazy.each do |line|
-      current_action = Actions[:on]
+      next_state = nil
 
       if line.start_with?('toggle')
         line.delete_prefix!('toggle')
-        current_action = Actions[:toggle]
       elsif line.start_with?('turn on')
-        current_action = Actions[:on]
+        next_state = State[:on]
         line.delete_prefix!('turn on')
       else
-        current_action = Actions[:off]
+        next_state = State[:off]
         line.delete_prefix!('turn off')
       end
 
@@ -40,13 +36,7 @@ module Day6
 
       for ix in x.to_i..end_x.to_i
         for iy in y.to_i..end_y.to_i
-          current_state = board[ix][iy]
-
-          if current_action == Actions[:toggle]
-            board[ix][iy] = !current_state
-          else
-            board[ix][iy] = current_action == Actions[:on]
-          end
+          board[ix][iy] = next_state.nil? ? !board[ix][iy] : next_state
         end
       end
     end
