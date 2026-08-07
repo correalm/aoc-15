@@ -30,8 +30,9 @@ module Day6
 
     lines.each do |line|
       instruction = parse(line)
+      action = transformers[instruction.action]
 
-      apply(board, transformers, instruction)
+      apply(action, board, instruction)
     end
 
     log(day: 6, part: 1, result: board.flatten.select{|l| l == 1}.count)
@@ -41,18 +42,19 @@ module Day6
     transformers = {
       toggle: ->(state) { state + 2 },
       on: ->(state) { state + 1 },
-      off: ->(state) { (state - 1 >= 0) ? (state - 1) : 0 },
+      off: ->(state) { [state - 1, 0].max },
     }
 
     board = init_board
 
     lines.each do |line|
       instruction = parse(line)
+      action = transformers[instruction.action]
 
-      apply(board, transformers, instruction)
+      apply(action, board, instruction)
     end
 
-    log(day: 6, part: 2, result: board.flatten.select{|l| l}.sum)
+    log(day: 6, part: 2, result: board.flatten.sum)
   end
 
   private
@@ -64,7 +66,7 @@ module Day6
   def parse(line)
     *action_words, start_coords, _, end_coords = line.split(' ')
 
-    action = ACTIONS.fetch(action_words.join(' ')) { raise  "parse :: invalid instrucion: #{line}" }
+    action = ACTIONS.fetch(action_words.join(' ')) { raise  "parse :: invalid instruction: #{line}" }
 
     x, y = parse_coords(start_coords)
     end_x, end_y = parse_coords(end_coords)
@@ -80,9 +82,7 @@ module Day6
     [Integer(x), Integer(y)]
   end
   
-  def apply(board, transformers, instruction)
-    action = transformers[instruction.action]
-
+  def apply(action, board, instruction)
     for ix in instruction.xs
       for iy in instruction.ys
         board[ix][iy] = action.call(board[ix][iy])
