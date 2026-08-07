@@ -3,45 +3,43 @@
 require_relative "../logger/logger"
 require_relative "../reader/reader"
 
-require 'set'
-
 module Day6
   extend self
 
   extend Logger
   extend Reader
 
-  State = { on: true, off: false }
+  ACTIONS = {
+    "toggle" => :toggle,
+    "turn on" => :on,
+    "turn off" => :off
+  }
+
+  Instruction = Data.define(:action, :xs, :ys)
+
+  private_constant :ACTIONS, :Instruction
 
   def part_one
+    transformers = {
+      toggle: ->(state) { !state },
+      on: ->(state) { true },
+      off: ->(state) { false },
+    }
+
     board = init_board
 
-    lines.lazy.each do |line|
-      next_state = nil
+    lines.each do |line|
+      instruction = parse(line)
+      action = transformers[instruction.action]
 
-      if line.start_with?('toggle')
-        line.delete_prefix!('toggle')
-      elsif line.start_with?('turn on')
-        next_state = State[:on]
-        line.delete_prefix!('turn on')
-      else
-        next_state = State[:off]
-        line.delete_prefix!('turn off')
-      end
-
-      initial, _,final = line.strip.chomp.split(' ')
-
-      x, y = initial.split(',')
-      end_x, end_y = final.split(',')
-
-      for ix in x.to_i..end_x.to_i
-        for iy in y.to_i..end_y.to_i
-          board[ix][iy] = next_state.nil? ? !board[ix][iy] : next_state
+      for ix in instruction.xs
+        for iy in instruction.ys
+          board[ix][iy] = action.call(board[ix][iy])
         end
       end
     end
 
-    p board.flatten.select{|l| l}.count
+    log(day: 6, part: 1, result: board.flatten.select{|l| l}.count)
   end
 
   def part_2
@@ -51,6 +49,25 @@ module Day6
 
   def lines
     read_lines(filename: 'puzzle.txt', dir: __dir__)
+  end
+
+  def parse(line)
+    *action_words, start_coords, _, end_coords = line.split(' ')
+
+    action = ACTIONS.fetch(actions_words.join(' ')) { raise  "parse :: invalid instrucion: #{line}" }
+
+    x, y = parse_coords(start_coords)
+    end_x, end_y = parse_coords(end_coords)
+
+    Instruction.new(action: action,
+                    xs: x..end_x,
+                    ys: y..end_y)
+  end
+
+  def parse_coords(raw)
+    x, y = raw.split(',')
+
+    [Integer(x), Integer(y)]
   end
 
   def init_board
@@ -65,7 +82,7 @@ module Day6
       board[x] = []
 
       for y in 0..999
-        board[x] << State[:off]
+        board[x] << false
       end
     end
 
