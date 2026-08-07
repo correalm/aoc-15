@@ -21,25 +21,20 @@ module Day6
 
   def part_one
     transformers = {
-      toggle: ->(state) { !state },
-      on: ->(state) { true },
-      off: ->(state) { false },
+      toggle: ->(state) { state.zero? ? 1 : 0 },
+      on: ->(state) { 1 },
+      off: ->(state) { 0 },
     }
 
-    board = init_board(false)
+    board = init_board
 
     lines.each do |line|
       instruction = parse(line)
-      action = transformers[instruction.action]
 
-      for ix in instruction.xs
-        for iy in instruction.ys
-          board[ix][iy] = action.call(board[ix][iy])
-        end
-      end
+      apply(board, transformers, instruction)
     end
 
-    log(day: 6, part: 1, result: board.flatten.select{|l| l}.count)
+    log(day: 6, part: 1, result: board.flatten.select{|l| l == 1}.count)
   end
 
   def part_two
@@ -49,20 +44,15 @@ module Day6
       off: ->(state) { (state - 1 >= 0) ? (state - 1) : 0 },
     }
 
-    board = init_board(0)
+    board = init_board
 
     lines.each do |line|
       instruction = parse(line)
-      action = transformers[instruction.action]
 
-      for ix in instruction.xs
-        for iy in instruction.ys
-          board[ix][iy] = action.call(board[ix][iy])
-        end
-      end
+      apply(board, transformers, instruction)
     end
 
-    log(day: 6, part: 1, result: board.flatten.select{|l| l}.sum)
+    log(day: 6, part: 2, result: board.flatten.select{|l| l}.sum)
   end
 
   private
@@ -89,20 +79,25 @@ module Day6
 
     [Integer(x), Integer(y)]
   end
+  
+  def apply(board, transformers, instruction)
+    action = transformers[instruction.action]
 
-  def init_board(state)
+    for ix in instruction.xs
+      for iy in instruction.ys
+        board[ix][iy] = action.call(board[ix][iy])
+      end
+    end
+  end
+
+  def init_board
     board = []
 
-    #            board
-    #     y1    y2      y3
-    # x1 [[false, false, false ...]
-    # x2 [[false, false, false ...]]
-    #              ...
     for x in 0..999
       board[x] = []
 
       for y in 0..999
-        board[x] << state
+        board[x] << 0
       end
     end
 
