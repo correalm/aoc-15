@@ -34,16 +34,13 @@ bool valid_action(Action a);
 int count_lit_lights(Board board);
 int perform(Action action, const int actual);
 void execute(Instruction instruction, Board board);
-void init(Board board);
 
 int main(void) {
   FILE *file = fopen("./puzzle.txt", "r");
   if (file == NULL) exit(1);
 
   char line[MAX_LINE_LENGTH];
-  Board board;
-
-  init(board);
+  Board board = {0};
 
   while (fgets(line, sizeof(line), file) != NULL) {
     Instruction instruction = parse(line);
@@ -100,14 +97,6 @@ Action parse_action(const char *raw) {
 }
 
 bool valid_action(Action a) { return a != ACTION_INVALID; }
-
-void init(Board board) {
-  for (int x = 0; x < BOARD_SIZE; x++) {
-    for (int y = 0; y < BOARD_SIZE; y++) {
-      board[x][y] = 0;
-    }
-  }
-}
 
 void execute(Instruction instruction, Board board) {
   for (int x = instruction.xs[0]; x <= instruction.xs[1]; x++) {
