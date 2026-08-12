@@ -3,10 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-# define MAX_LINE_LENGTH 1024
-# define BOARD_SIZE 1000
-
-# define INSTRUCTION_HEADER_LEN 10
+#define MAX_LINE_LENGTH 1024
+#define BOARD_SIZE 1000
+#define INSTRUCTION_HEADER_LEN 10
 
 typedef enum {
   ACTION_INVALID = -1,
@@ -32,12 +31,15 @@ Action parse_action(const char *raw);
 Instruction parse(const char *line);
 bool valid_action(Action a);
 int count_lit_lights(Board board);
-int perform(Action action, const int actual);
+int perform(Action action, const int current_state);
 void execute(Instruction instruction, Board board);
 
 int main(void) {
   FILE *file = fopen("./puzzle.txt", "r");
-  if (file == NULL) exit(1);
+  if (file == NULL) {
+    perror("unable to open file");
+    exit(1);
+  };
 
   char line[MAX_LINE_LENGTH];
   Board board = {0};
@@ -65,14 +67,14 @@ Instruction parse(const char *line) {
   int result = sscanf(line, "%9[a-z ] %u,%u through %u,%u", raw_action, &x, &y, &x_end, &y_end);
 
   if (result != 5) {
-    perror("parse: Wrong assign number");
+    fprintf(stderr, "wrong number of assignemts on parse :: expect 5 got %i\n", result);
     exit(1);
   }
 
   Action action = parse_action(raw_action);
 
   if (!valid_action(action)) {
-    perror("parse: Invalid action");
+    fprintf(stderr, "invalid action: %i\n", action);
     exit(1);
   }
 
@@ -86,12 +88,11 @@ Instruction parse(const char *line) {
 }
 
 Action parse_action(const char *raw) {
-  // TODO: implement trim function to enhance this comparsion wihtout the space in the end
-  if (strcmp(raw, "toggle ") == 0) return ACTION_TOGGLE;
+  if (strncmp(raw, "toggle", strlen("toggle")) == 0) return ACTION_TOGGLE;
 
-  if (strcmp(raw, "turn on ") == 0) return ACTION_ON;
+  if (strncmp(raw, "turn on", strlen("turn on")) == 0) return ACTION_ON;
 
-  if (strcmp(raw, "turn off ") == 0) return ACTION_OFF;
+  if (strncmp(raw, "turn off", strlen("turn off")) == 0) return ACTION_OFF;
 
   return ACTION_INVALID;
 }
@@ -99,19 +100,22 @@ Action parse_action(const char *raw) {
 bool valid_action(Action a) { return a != ACTION_INVALID; }
 
 void execute(Instruction instruction, Board board) {
-  for (int x = instruction.xs[0]; x <= instruction.xs[1]; x++) {
-    for (int y = instruction.ys[0]; y <= instruction.ys[1]; y++) {
+  for (unsigned int x = instruction.xs[0]; x <= instruction.xs[1]; x++) {
+    for (unsigned int y = instruction.ys[0]; y <= instruction.ys[1]; y++) {
       board[x][y] = perform(instruction.action, board[x][y]);
     }
   }
 }
 
-int perform(Action action, const int actual) {
-  if (action == ACTION_TOGGLE) return actual == STATE_OFF ? STATE_ON : STATE_OFF;
-
-  if (action == ACTION_ON) return STATE_ON;
-
-  return STATE_OFF;
+int perform(Action action, const int current_state) {
+  switch (action) {
+    case ACTION_TOGGLE:
+      return current_state == STATE_OFF ? STATE_ON : STATE_OFF;
+    case ACTION_ON:
+      return STATE_ON;
+    default:
+      return STATE_OFF;
+  }
 }
 
 int count_lit_lights(Board board) {
