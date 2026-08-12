@@ -41,8 +41,8 @@ int main(void) {
     exit(1);
   };
 
+  static Board board;
   char line[MAX_LINE_LENGTH];
-  Board board = {0};
 
   while (fgets(line, sizeof(line), file) != NULL) {
     Instruction instruction = parse(line);
