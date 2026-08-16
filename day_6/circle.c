@@ -50,9 +50,9 @@ void circle() {
     for (int y = 0; y < size; y++) {
       Point point = { .x = x, .y = y };
 
-      if (is_inner_circle(point, center, radius)) { printf(" "); }
-      else if (is_outer_circle(point, center, radius)) { printf("@"); }
-      else printf(" ");
+      if (is_inner_circle(point, center, radius)) { printf("  "); }
+      else if (is_outer_circle(point, center, radius)) { printf("@@"); }
+      else printf("  ");
     }
 
     printf("\n");
